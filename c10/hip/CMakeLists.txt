@@ -35,8 +35,7 @@ if(NOT BUILD_LIBTORCHLESS)
   add_library(c10_hip ${C10_HIP_SRCS} ${C10_HIP_HEADERS})
 
   # Set HIP architectures
-  list(JOIN PYTORCH_ROCM_ARCH " " PYTORCH_ROCM_ARCH_STRING)
-  set_target_properties(c10_hip PROPERTIES HIP_ARCHITECTURES "${PYTORCH_ROCM_ARCH_STRING}")
+  set_target_properties(c10_hip PROPERTIES HIP_ARCHITECTURES "${PYTORCH_ROCM_ARCH}")
   torch_compile_options(c10_hip)
 
   # Propagate HIP_CXX_FLAGS that were set from Dependencies.cmake

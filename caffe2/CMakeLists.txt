@@ -945,8 +945,7 @@ if(USE_ROCM)
   add_library(torch_hip ${Caffe2_HIP_SRCS})
 
   # Set HIP architectures
-  list(JOIN PYTORCH_ROCM_ARCH " " PYTORCH_ROCM_ARCH_STRING)
-  set_target_properties(torch_hip PROPERTIES HIP_ARCHITECTURES "${PYTORCH_ROCM_ARCH_STRING}")
+  set_target_properties(torch_hip PROPERTIES HIP_ARCHITECTURES "${PYTORCH_ROCM_ARCH}")
   if(USE_FLASH_ATTENTION)
     target_link_libraries(torch_hip PRIVATE __caffe2_aotriton)
   endif()
@@ -1989,9 +1988,8 @@ if(BUILD_TEST)
 
       # Set HIP architectures for HIP tests
       if(test_src MATCHES "^.*\\.(hip|cu)$")
-        list(JOIN PYTORCH_ROCM_ARCH " " ROCM_PROPERTY_ARCH_LIST)
         set_target_properties(${test_name} PROPERTIES
-          HIP_ARCHITECTURES ${ROCM_PROPERTY_ARCH_LIST}
+          HIP_ARCHITECTURES "${PYTORCH_ROCM_ARCH}"
           LINKER_LANGUAGE CXX)
       endif()
 
