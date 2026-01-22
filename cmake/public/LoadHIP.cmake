@@ -102,6 +102,22 @@ endmacro()
 # Note: CMAKE_HIP_COMPILER should be set by the developer if needed
 enable_language(HIP)
 
+# Workaround for CMake bug: When mixing MSVC frontend (clang-cl for C/CXX)
+# and GNU frontend (clang++ for HIP) on Windows, CMAKE_*_LINKER_FLAGS_INIT
+# contains bare MSVC flags like "/machine:x64" instead of "-Xlinker /machine:x64"
+if(WIN32 AND CMAKE_HIP_COMPILER)
+  foreach(config "" "_DEBUG" "_RELEASE" "_RELWITHDEBINFO" "_MINSIZEREL")
+    foreach(type "EXE" "SHARED" "MODULE" "STATIC")
+      set(flag_var "CMAKE_${type}_LINKER_FLAGS${config}")
+      if(DEFINED ${flag_var})
+        # Wrap MSVC-style flags with -Xlinker for GNU-like HIP compiler
+        string(REGEX REPLACE "(/[a-zA-Z][a-zA-Z0-9:_-]*)" "-Xlinker \\1" fixed_flags "${${flag_var}}")
+        set(CMAKE_HIP_${type}_LINKER_FLAGS${config} "${fixed_flags}")
+      endif()
+    endforeach()
+  endforeach()
+endif()
+
 if(CMAKE_HIP_COMPILER)
   set(PYTORCH_FOUND_HIP TRUE)
 
